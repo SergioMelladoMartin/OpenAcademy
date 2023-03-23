@@ -1,1 +1,2 @@
-# Odoo module: Open Academy
+# OpenAcademy
+ 
