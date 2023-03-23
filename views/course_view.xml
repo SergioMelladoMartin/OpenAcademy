@@ -1,0 +1,76 @@
+<odoo>
+  <record model="ir.actions.act_window" id="course_window">
+    <field name="name">Courses</field>
+    <field name="res_model">open_academy.course</field>
+    <field name="view_mode">tree,form</field>
+  </record> 
+
+  <menuitem 
+    id="menu_open_academy" 
+    name="Open Academy" 
+    web_icon="open_academy,static/open_academy_icon.png"
+  />
+
+  <menuitem 
+    id="menu_courses" 
+    name="Courses" 
+    parent="menu_open_academy" 
+    action="course_window"
+  />
+
+  <record model="ir.ui.view" id="course_search">
+    <field name="name">Search Courses</field>
+    <field name="model">open_academy.course</field>
+    <field name="arch" type="xml">
+
+      <search>
+        <field name="title"/>
+        <field name="description"/>
+        <field name="responsible"/>
+      </search>
+    
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="course_view">
+    <field name="name">Courses</field>
+    <field name="model">open_academy.course</field>
+    <field name="priority" eval="16"/>
+    <field name="arch" type="xml">
+            
+      <tree string="List">
+        <field name="name"/>
+        <field name="description"/>
+        <field name="responsible"/>
+        <field name="sessions_count" string="Number of sessions"/>
+        <field name="type"/>
+      </tree>
+
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="course_form">
+    <field name="name">Form Search</field>
+    <field name="model">open_academy.course</field>
+    <field name="arch" type="xml">
+
+      <form>
+        <notebook>
+          <page string="General">
+            <group>
+              <field name="title"/>
+              <field name="description"/>
+              <field name="responsible"/>
+              <field name="type"/>
+            </group>
+          </page>
+          <page string="Sessions">
+            <field name="sessions" nolabel="1"/>
+          </page>
+        </notebook>
+      </form>
+    
+    </field>
+  </record> 
+
+</odoo>

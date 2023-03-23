@@ -1,0 +1,131 @@
+<odoo>
+
+  <record model="ir.actions.act_window" id="session_window">
+    <field name="name">Sessions</field>
+    <field name="res_model">open_academy.session</field>
+    <field name="view_mode">tree,form,kanban,graph,calendar</field>
+  </record> 
+
+  <menuitem 
+    id="menu_sessions" 
+    name="Sessions"
+    parent="menu_open_academy" 
+    action="open_academy.session_window"
+  />
+
+  <record model="ir.ui.view" id="session_search">
+    <field name="name">Sessions Search</field>
+    <field name="model">open_academy.session</field>
+    <field name="arch" type="xml">
+
+      <search>
+        <field name="name"/>
+        <field name="course_title"/>
+        <field name="instructor"/>
+        <field name="initial_date"/>
+        <filter name="my_courses" string="My Courses" domain="[('instructor', '=', uid)]" help="My courses"/>
+        <filter name="group_by_instructor" string="Group By Instructor" context="{'group_by': 'instructor'}"/>
+      </search>
+    
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="session_view">
+    <field name="name">Sessions Tree</field>
+    <field name="model">open_academy.session</field>
+    <field name="priority" eval="16"/>
+    <field name="arch" type="xml">
+      <tree string="List" decoration-info="color == 1" decoration-danger="color == 3">
+        <field name="name" string="Session"/>
+        <field name="course_title" string="Course"/>
+        <field name="initial_date"/>
+        <field name="duration" widget="time"/>
+        <field name="instructor"/>
+        <field name="taken_seats" widget="progressbar" string="% of taken seats"/>
+        <field name="color" invisible="1"/>
+      </tree>
+
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="session_form">
+    <field name="name">Search Session</field>
+    <field name="model">open_academy.session</field>
+    <field name="arch" type="xml">
+
+      <form>
+        <group>
+          <field name="name"/>
+          <field name="instructor"/>
+          <field name="course"/>
+          <field name="initial_date"/>
+          <field name="duration"/>
+          <field name="number_of_seats"/>
+          <field name="attendees" options="{'no_create': True}">
+            <tree>
+              <field name="name"/>
+              <field name="email"/>
+              <field name="phone"/>
+            </tree>
+          </field>
+        </group>
+      </form>
+    
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="session_calendar">
+    <field name="name">Calendar Sessions</field>
+    <field name="model">open_academy.session</field>
+    <field name="arch" type="xml">
+
+      <calendar string="Sessions" date_start="initial_date" color="color">
+        <field name="name"/>
+        <field name="course_title"/>
+        <field name="instructor"/>
+        <field name="color" invisible="1"/>
+      </calendar>
+
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="session_graph">
+    <field name="name">Graph Session</field>
+    <field name="model">open_academy.session</field>
+    <field name="arch" type="xml">
+
+      <graph  type="bar" string="Graph">
+        <field name="course" type="row"/>
+        <field name="attendees_count" string="Attendees" type="measure"/>
+      </graph>
+
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="session_kanban">
+    <field name="name">Kanban Session</field>
+    <field name="model">open_academy.session</field>
+    <field name="arch" type="xml">
+
+      <kanban default_group_by="course" >
+        <templates>
+          <t t-name="kanban-box">
+            <div>
+              <div>
+                <strong><field name="name"/></strong>
+                <div>
+                  <field name="instructor"/>
+                </div>
+                <div>
+                  <field name="initial_date" widget="date"/>
+                </div>
+              </div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+
+    </field>
+  </record>
+
+</odoo>
