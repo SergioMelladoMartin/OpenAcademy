@@ -17,5 +17,5 @@ Para instalar Open Academy en tu instancia de Odoo, sigue los siguientes pasos:
 
 ## Tecnologías
 ![Python](https://img.shields.io/badge/Python-3.6-blue.svg)
-![Odoo](https://img.shields.io/badge/Odoo-11.0-green.svg)
+![Odoo](https://img.shields.io/badge/Odoo-14.0-green.svg)
 ![PosterSQL](https://img.shields.io/badge/PostgreSQL-9.6-red.svg)
