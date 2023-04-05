@@ -1,0 +1,243 @@
+<odoo>
+    <data>
+        <template id="course_id_template" name="Cursos">
+            <t t-call="website.layout">
+                <div class="container">
+                    <ol class="o_portal_submenu breadcrumb mb-0 py-2 flex-grow-1 row">
+                        <li><a href="/my/home"><i class="fa fa-home"></i></a></li>
+                        <li><a href="/courses">/ Courses</a></li>
+                        <li class="active">
+                            / 
+                            <t t-esc="course.title"/>
+                        </li>
+                    </ol>
+                </div>
+                <div class="container mt-2">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 style="dis">
+                                <t t-esc="course.title"/>
+                            </h1>
+                            <div style="float: right; margin-bottom: 10px;">
+                                <t t-if="course.type == 'presential'"><span class="badge badge-success">Presential</span></t>
+                                <t t-else=""><span class="badge badge-primary">Online</span></t>
+                            </div>
+                            <h4>
+                                <i>
+                                    <t t-esc="course.responsible.name"/>
+                                </i>
+                            </h4>
+                            <div style="margin-bottom: 10px;">
+                                <t t-if="len(course.documents) > 0">
+                                    <button class="btn btn-primary ">
+                                    <a t-att-href="'/course/' + str(course.id) + '/documents'">                                        
+                                    Documents <i class="fa fa-file"></i>
+                                    </a>
+                                    </button>
+                                </t>
+                            </div>
+                            <hr/>
+                            <t t-raw="course.description"/>
+                            <hr/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <h3>Sessions</h3>
+                            <form method="post" t-att-action="'/course/' + str(course.id)">
+                                <select class="form-control" style="width: 15%; margin-bottom: 10px; float: right;" name="sort_by" onchange="this.form.submit()">
+                                    <option name="sort_by" value="name" t-att-selected="'selected' if sort_by == 'name' else None">Name (A-Z)</option>
+                                    <option name="sort_by" value="-name" t-att-selected="'selected' if sort_by == 'name_desc' else None">Name (Z-A)</option>
+                                    <option name="sort_by" value="instructor" t-att-selected="'selected' if sort_by == 'instructor' else None">Instructor (A-Z)</option>
+                                    <option name="sort_by" value="-instructor" t-att-selected="'selected' if sort_by == 'instructor_desc' else None">Instructor (Z-A)</option>
+                                    <option name="sort_by" value="initial_date" t-att-selected="'selected' if sort_by == 'initial_date' else None">Start date</option>
+                                    <option name="sort_by" value="duration" t-att-selected="'selected' if sort_by == 'duration' else None">Duration</option>
+                                    <option name="sort_by" value="taken_seats" t-att-selected="'selected' if sort_by == 'taken_seats' else None">Occupation</option>
+                                    <option disabled="disabled" hidden="hidden" t-att-selected="'selected' if not sort_by else None">Sort by</option>
+                                </select>
+                                <select class="form-control" style="width: 13%; margin-bottom: 10px; float: right;" name="available" onchange="this.form.submit()">
+                                    <option name="available" value="all" t-att-selected="'selected' if available == 'all' else None">Todos</option>
+                                    <option name="available" value="yes" t-att-selected="'selected' if available == 'yes' else None">Solo sesiones con sitios libres</option>
+                                    <option disabled="disabled" hidden="hidden" t-att-selected="'selected' if not available else None">Disponibilidad</option>
+                                </select>
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            </form>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Instructor</th>
+                                        <th>Start Date</th>
+                                        <th>Duration</th>
+                                        <th>Occupation</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="sessions" t-as="s">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/session/' + str(s.id)">
+                                                    <t t-esc="s.name"/>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <t t-esc="s.instructor.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="s.initial_date"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="s.duration" t-options='{"widget": "float_time"}'/>
+                                                h
+                                            </td>
+                                            <td>
+                                                <t t-esc="s.taken_seats"/>
+                                                %
+                                            </td>
+                                            <td>
+                                                <t t-if="not request.session.uid">
+                                                    <div class="d-flex">
+                                                        <div class="container">
+                                                            <a class="btn btn-primary btn-block" type="button" t-att-href="'/web/login'">Login</a>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-if="s.attendees_count != s.number_of_seats">
+                                                        <t t-if="request.env.user.partner_id.id in s.attendees.ids">
+                                                            <div class="d-flex">
+                                                                <div class="container">
+                                                                    <a class="btn btn-danger btn-block" type="button" t-att-href="'/leave/' + str(s.id) + '/course'">Leave</a>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <div class="d-flex">
+                                                                <div class="container">
+                                                                    <a class="btn btn-primary btn-block" type="button" t-att-href="'/join/' + str(s.id) + '/course'">Join</a>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-if="request.env.user.partner_id.id in s.attendees.ids">
+                                                            <div class="d-flex">
+                                                                <div class="container">
+                                                                    <a class="btn btn-danger btn-block" type="button" t-att-href="'/leave/' + str(s.id) + '/course'">Leave</a>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <div class="container">
+                                                                <p class="text-danger">Session is full</p>
+                                                            </div>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <t t-call="website.pager"/>
+                        </div>
+                    </div>
+                    <div class="margin-top-32 margin-bottom-32">
+                        <t t-if="len(course.images) > 0">
+                            <t t-set="images" t-value="course.images"/>
+                            <div class="margin-top-32">
+                                <div class="col-md-12 mt-2">
+                                    <h3>Images</h3>
+                                    <div class="row">
+                                        <t t-foreach="images" t-as="image">
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <img t-att-src="'data:image/*;base64,%s' % image.datas.decode()" alt="Image"
+                                                            style="width: 280px; height: 280px; object-fit: cover;"/>  
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <t t-if="request.session.uid">
+                        <div class="row">
+                            <div class="col-md-12 mt-2">
+                                <h3>Historial</h3>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mt32">
+                                            <div class="media mt32">
+                                                <div>
+                                                    <img t-att-src="'/web/image/res.partner/%s/image_128' % request.env.user.partner_id.id" width="40" height="40" 
+                                                        class="o_portal_chatter_avatar o_object_fit_cover" alt="Avatar" style="margin-right: 18px;"/>
+                                                </div>
+                                                <div class="media-body">
+                                                    <form method="post" t-att-action="'/course/comment/' + str(course.id)">
+                                                        <textarea class="form-control" name="comment" placeholder="Write a comment..." rows="4"
+                                                            style="border-radius: 4px; background-color: #f8f8f8;"></textarea>     
+                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                        <button actions="submit" class="btn btn-primary" style="margin-top: 16px;">
+                                                        <i class="fa fa-comment"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-6" style="margin-top: 50px !important;">
+                                            <t t-foreach="course.comments" t-as="c">
+                                                <div class="o_portal_chatter_messages">
+                                                    <div class="o_portal_chatter_message">
+                                                        <div class="o_portal_chatter_message_header">
+                                                            <div class="o_portal_chatter_message_header_title">
+                                                                <span class="o_portal_chatter_message_author_avatar">
+                                                                <img t-att-src="'/web/image/mail.message/' + str(c.id) + '/author_avatar'" alt="Avatar" width="40" height="40"/>
+                                                                </span>
+                                                                <span class="o_portal_chatter_message_author">
+                                                                    <h5 class="d-inline">
+                                                                        <t t-esc="c.author_id.name"/>
+                                                                    </h5>
+                                                                </span>
+                                                                <span class="o_portal_chatter_message_date">
+                                                                    <p class="text-muted d-inline">
+                                                                        - 
+                                                                        <t t-esc="c.date"/>
+                                                                    </p>
+                                                                </span>
+                                                                <form method="post" t-att-action="'/course/comment/delete/' + str(course.id)" >
+                                                                    <t t-if="request.env.user.partner_id.id == c.author_id.id">
+                                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                        <input type="hidden" name="comment_id" t-att-value="c.id"/>
+                                                                        <input type="hidden" name="course_id" t-att-value="course.id"/>
+                                                                        <button type="submit" class="btn btn-danger float-right" style="display: flex; align-items: center;">
+                                                                        <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </t>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o_portal_chatter_message_body">
+                                                            <p>
+                                                                <t t-esc="c.body[3:-4]"/>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <hr/>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

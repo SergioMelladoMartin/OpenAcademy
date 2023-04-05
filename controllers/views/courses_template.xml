@@ -1,0 +1,88 @@
+<odoo>
+    <data>
+        <template id="courses_template" name="Courses">
+            <t t-call="website.layout">
+                <div class="container">
+                    <ol class="o_portal_submenu breadcrumb mb-0 py-2 flex-grow-1 row">
+                        <li><a href="/my/home"><i class="fa fa-home"></i></a></li>
+                        <li class="active">/ Courses</li>
+                    </ol>
+                </div>
+                <div class="container mt-2">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1>Courses</h1>
+                        </div>
+                        <div class="display-flex col-lg-12">
+                            <div>
+                                <form action="/courses" method="post">
+                                    <select class="form-control" style="width: 13%; margin-bottom: 10px; float: right;" name="sort_by" onchange="this.form.submit()">
+                                        <option name="sort_by" value="title" t-att-selected="'selected' if sort_by == 'title' else None">Title (A-Z)</option>
+                                        <option name="sort_by" value="-title" t-att-selected="'selected' if sort_by == '-title' else None">Title (Z-A)</option>
+                                        <option name="sort_by" value="responsible" t-att-selected="'selected' if sort_by == 'responsible' else None">Responsible (A-Z)</option>
+                                        <option name="sort_by" value="-responsible" t-att-selected="'selected' if sort_by == '-responsible' else None">Responsible (Z-A)</option>
+                                        <option disabled="disabled" hidden="hidden" t-att-selected="'selected' if not sort_by else None">Sort by</option>
+                                    </select>
+                                    <select class="form-control" style="width: 13%; margin-bottom: 10px; float: right;" name="filter_by" onchange="this.form.submit()">
+                                        <option name="filter_by" value="all" t-att-selected="'selected' if filter_by == 'all' else None">All</option>
+                                        <option name="filter_by" value="presential" t-att-selected="'selected' if filter_by == 'presential' else None">Presential</option>
+                                        <option name="filter_by" value="online" t-att-selected="'selected' if filter_by == 'online' else None">Online</option>
+                                        <option disabled="disabled" hidden="hidden" t-att-selected="'selected' if not filter_by else None">Modalidad</option>
+                                    </select>
+                                    <select class="form-control" style="width: 13%; margin-bottom: 10px; float: right;" name="available" onchange="this.form.submit()">
+                                        <option name="available" value="all" t-att-selected="'selected' if available == 'all' else None">Todos</option>
+                                        <option name="available" value="yes" t-att-selected="'selected' if available == 'yes' else None">Solo con sesiones disponibles</option>
+                                        <option disabled="disabled" hidden="hidden" t-att-selected="'selected' if not available else None">Disponibilidad</option>
+                                    </select>
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                </form>
+                                <form method="post" action="/courses">
+                                    <button type="submit" class="btn btn-primary" style="margin-right:16px; float: right; margin-bottom: 10px;">
+                                    <i class="fa fa-search"></i>
+                                    </button>
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="text" class="form-control" placeholder="Search..." style="float: right; width: 30%; margin-bottom: 10px;"
+                                        name="search"/>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Responsible</th>
+                                    <th>Sessions</th>
+                                    <th>Modality</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="course" t-as="c">
+                                    <tr>
+                                        <td>
+                                            <a t-att-href="'/course/' + str(c.id)">
+                                                <t t-esc="c.title"/>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <t t-esc="c.responsible.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="len(c.sessions)"/>
+                                        </td>
+                                        <td>
+                                            <t t-if="c.type == 'presential'"><span class="badge badge-success">Presential</span></t>
+                                            <t t-else=""><span class="badge badge-primary">Online</span></t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <t t-call="website.pager"/>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
